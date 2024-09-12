@@ -141,14 +141,20 @@ class Ball {
     }
     if (this.collidesWithRightWall()) {
       this.player1.points++;
-      this.displayMessage("Player 1 scores!", () => this.resetBall());
+      this.displayMessage("Player 1 scores!", () => {
+        this.resetPlayers();
+        this.resetBall();
+      });
     }
     if (this.collidesWithBottomWall()) {
       this.direction.y *= -1;
     }
     if (this.collidesWithLeftWall()) {
       this.player2.points++;
-      this.displayMessage("Player 2 scores!", () => this.resetBall());
+      this.displayMessage("Player 2 scores!", () => {
+        this.resetPlayers();
+        this.resetBall();
+      });
     }
 
     if (this.player1.points >= 5 || this.player2.points >= 5) {
@@ -217,6 +223,11 @@ class Ball {
     this.y = this.canvas.height / 2;
     this.direction.x = Math.random() > 0.5 ? 1 : -1;
     this.direction.y = Math.random() > 0.5 ? 1 : -1;
+  }
+
+  resetPlayers() {
+    this.player1.y = this.canvas.height / 2 - this.player1.height / 2;
+    this.player2.y = this.canvas.height / 2 - this.player2.height / 2;
   }
 }
 
