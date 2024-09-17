@@ -4,12 +4,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+
+  <link rel="stylesheet" href="./Styles/style.css">
   <title>Document</title>
 
 </head>
 
 <body>
-  <canvas id="my-canvas"></canvas>
+  <div id="container">
+    <div id="left-side">
+      <div id="stats">
+        <!-- Statistik wird hier eingefügt -->
+        <h2>STATISTICS</h2>
+        <p id="games-played">Games Played: 0</p>
+        <p id="games-won">Games Won: 0</p>
+        <p id="games-lost">Games Lost: 0</p>
+      </div>
+    </div>
+    <div id="middle">
+      <h1 id="game-title">
+        <span>P</span>
+        <span>I</span>
+        <span>X</span>
+        <span>E</span>
+        <span>L</span>
+        <span>P</span>
+        <span>O</span>
+        <span>N</span>
+        <span>G</span>
+      </h1>
+      <canvas id="my-canvas"></canvas>
+    </div>
+    <div id="right-side">
+      <div id="menu">
+        <button id="start-game-btn">Start Game</button>
+        <button id="pause-game-btn">Pause</button>
+        <button id="end-game-btn">End Game</button>
+      </div>
+    </div>
+  </div>
+  <!--  -->
+  <!-- <div id="game-modal"
+    style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 8px;">
+    <p id="winner-message"></p>
+    <button id="save-stats-btn">Spiel in Statistik eintragen</button>
+    <button id="new-game-btn">Neues Spiel</button>
+    <button id="continue-later-btn">Später weiter spielen</button>
+  </div> -->
+
 
   <script type="module" src="game.js"></script>
 </body>

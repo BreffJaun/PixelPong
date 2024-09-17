@@ -1,4 +1,5 @@
 // I M P O R T   O F   F U N C T I O N S
+import { showModal } from "../utils/utils.js";
 
 // C O D E
 class Settings {
@@ -159,10 +160,10 @@ class Ball {
 
     if (this.player1.points >= 5 || this.player2.points >= 5) {
       this.showMessage = true;
-      this.message =
-        this.player1.points >= 5 ? "Player 1 wins!" : "Player 2 wins!";
-      this.velocity = 0; // Stoppe den Ball
-      // console.log(`Game over: ${this.message}`);
+      this.message = this.velocity = 0; // Stoppe den Ball
+      // this.player1.points >= 5 ? "Player 1 wins!" : "Player 2 wins!";
+      const winner = this.player1.points >= 5 ? "Player 1" : "Player 2";
+      showModal(winner);
     }
   }
 
