@@ -98,8 +98,15 @@ body {
   cursor: pointer;
 }
 
-#menu button:hover {
+#menu button:not(:disabled):hover {
   background-color: #eee;
+}
+
+#menu button:disabled {
+  /* background-color: #6c757d; */
+  cursor: not-allowed;
+  opacity: 0.6;
+  color: grey;
 }
 
 #middle {

@@ -14,6 +14,11 @@ export default class Settings {
     middleLine: "white",
     lineWidth: 10,
     lineDash: [30, 20],
+    font: "'Press Start 2P', sans-serif",
     fontColor: "white",
+    infoFontColor: "black",
+    fontSize: 20,
+    fontSizeFactor: 1.3,
   };
+  static gameSettings = {};
 }

@@ -10,6 +10,7 @@ export default class Player extends GameElement {
     super(x, y, color, canvas);
     this.width = width;
     this.height = height;
+    this.isLeft = isLeft;
     this.x = isLeft
       ? Settings.player.distance
       : canvas.width - Settings.player.distance - this.width;
@@ -34,12 +35,23 @@ export default class Player extends GameElement {
     this._updatePosition();
   }
 
+  resetPosition() {
+    // console.log("Player wird resetet!");
+    const canvas = this.getCanvasContext().canvas;
+    const playerStartX = this.isLeft
+      ? Settings.player.distance
+      : canvas.width - Settings.player.distance - this.width;
+    this.x = playerStartX;
+    this.y = (canvas.height - this.height) / 2;
+    this.direction = { x: 0, y: 0 };
+  }
+
   // Private Methods
   _checkWallCollision() {
     const canvas = this.getCanvasContext().canvas;
     if (this._collidesWithBottomWall()) {
       this.direction.y = 0;
-      this.y = canvas.height - height - 1;
+      this.y = canvas.height - this.height - 1;
     }
     if (this._collidesWithTopWall()) {
       this.direction.y = 0;

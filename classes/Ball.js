@@ -11,7 +11,7 @@ export default class Ball extends GameElement {
     this.radius = radius;
     this.#player1 = player1;
     this.#player2 = player2;
-    this.velocity = 4;
+    this.velocity = 6; // default 3
     this.direction = { x: 1, y: -1 };
   }
 
@@ -33,6 +33,7 @@ export default class Ball extends GameElement {
   }
 
   reset() {
+    // console.log("Ball wird resetet!");
     const canvas = this.getCanvasContext().canvas;
     this.x = canvas.width / 2;
     this.y = canvas.height / 2;

@@ -3,4 +3,11 @@ import Game from "./classes/Game.js";
 
 // C O D E
 const game = new Game();
-game.start();
+const startButton = document.getElementById("start-button");
+if (startButton) {
+  startButton.addEventListener("click", () => {
+    if (!game.isGameStarted()) {
+      game.start();
+    }
+  });
+}
