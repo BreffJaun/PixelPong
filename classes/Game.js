@@ -12,12 +12,12 @@ export default class Game {
   #ball;
   #requestId;
   #isGameOver = false;
-  #scorePauseDuration = 100; // default 2000
+  #scorePausedDuration = 100; // default 2000
   #isPaused = false;
+  #scorePaused = false;
   #xPosText;
   #yPosText;
   #gameStarted = false;
-  #pauseBlinkInterval;
 
   constructor() {
     this.#canvas = document.getElementById("my-canvas");
@@ -65,12 +65,19 @@ export default class Game {
     this.#setupButtonListeners();
   }
 
+  initalizeGame() {
+    this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+    this.#drawPlayfield();
+    this.#drawScore();
+    this.#updateAndDraw();
+  }
+
   start() {
     this.#resetGame();
     this.#initControls();
     this.#update();
+    console.log("GAME STARTED");
     this.#gameStarted = true;
-    this.#updateButtonStates();
   }
 
   isGameStarted() {
@@ -78,34 +85,43 @@ export default class Game {
   }
 
   #resetGame() {
+    this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
     this.#isGameOver = false;
     this.#isPaused = false;
-    this.#player1.resetPosition();
-    this.#player2.resetPosition();
-    this.#ball.reset();
-    this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
-    if (this.#pauseBlinkInterval) {
-      clearInterval(this.#pauseBlinkInterval);
-    }
+    this.#scorePaused = false;
+    this.#updateAndDraw();
   }
 
   #endGame() {
-    this.#isGameOver = true;
-    cancelAnimationFrame(this.#requestId);
+    this.#isGameOver = false;
     this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+    this.#drawPlayfield();
+    this.#updateAndDraw();
+    this.#drawScore();
+    this.#displayFinishText();
     this.#updateButtonStates();
+    cancelAnimationFrame(this.#requestId);
   }
 
   #update() {
+    if (this.#isGameOver) {
+      this.#endGame();
+    }
+    this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
     if (!this.#isPaused) {
-      this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+      // && !this.#scorePaused
       this.#drawPlayfield();
       this.#gameLogic();
       this.#updateAndDraw();
       this.#drawScore();
-    }
-    this.#requestId = requestAnimationFrame(this.#update.bind(this));
-    if (this.#isGameOver) {
+      this.#updateButtonStates();
+      this.#requestId = requestAnimationFrame(this.#update.bind(this));
+    } else {
+      this.#drawPlayfield();
+      this.#updateAndDraw();
+      this.#drawScore();
+      this.#drawPauseMessage();
+      this.#updateButtonStates();
       cancelAnimationFrame(this.#requestId);
     }
   }
@@ -143,32 +159,40 @@ export default class Game {
     if (this.#isPaused) {
       this.#context.font = `${60}px ${Settings.playField.font}`;
       this.#context.textAlign = "center";
-      this.#context.fillStyle =
-        this.#context.fillStyle === "transparent"
-          ? "rgba(255, 0, 0, 0.5)"
-          : "transparent";
+      this.#context.fillStyle = "rgba(255, 0, 0, 0.5)";
       this.#context.fillText("PAUSE", this.#xPosText, this.#yPosText);
     }
   }
 
+  #drawScorePauseMessage(message) {
+    if (this.#scorePaused) {
+      // this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+      this.#context.font = `${Settings.playField.fontSize}px ${Settings.playField.font}`;
+      this.#context.fillStyle = Settings.playField.infoFontColor;
+      this.#context.fillText(message, this.#xPosText, this.#yPosText);
+    }
+  }
+
   #gameLogic() {
-    if (this.#ball._collidesWithLeftWall()) {
-      this.#player2.points++;
-      if (this.#player2.points !== Settings.maxPoints) {
-        this.#displayMessage("Player 1 scores!", () => {
-          this.#ball.reset();
-          this.#player1.resetPosition();
-          this.#player2.resetPosition();
-        });
-      }
-    } else if (this.#ball._collidesWithRightWall()) {
-      this.#player1.points++;
-      if (this.#player1.points !== Settings.maxPoints) {
-        this.#displayMessage("Player 1 scores!", () => {
-          this.#ball.reset();
-          this.#player1.resetPosition();
-          this.#player2.resetPosition();
-        });
+    if (!this.#scorePaused) {
+      if (this.#ball._collidesWithLeftWall()) {
+        if (this.#player2.points < Settings.maxPoints) {
+          this.#player2.points++;
+          this.#scorePauseToggle("Player 2 scores!", () => {
+            this.#ball.reset();
+            this.#player1.resetPosition();
+            this.#player2.resetPosition();
+          });
+        }
+      } else if (this.#ball._collidesWithRightWall()) {
+        if (this.#player1.points < Settings.maxPoints) {
+          this.#player1.points++;
+          this.#scorePauseToggle("Player 1 scores!", () => {
+            this.#ball.reset();
+            this.#player1.resetPosition();
+            this.#player2.resetPosition();
+          });
+        }
       }
     }
 
@@ -177,7 +201,6 @@ export default class Game {
       this.#player2.points >= Settings.maxPoints
     ) {
       this.#isGameOver = true;
-      this.#displayFinishText();
     }
   }
 
@@ -243,36 +266,33 @@ export default class Game {
   #togglePause() {
     this.#isPaused = !this.#isPaused;
     if (!this.#isPaused) {
-      this.#update();
+      this.#requestId = requestAnimationFrame(this.#update.bind(this));
+    } else {
+      this.#drawPauseMessage();
+      cancelAnimationFrame(this.#requestId);
     }
-    if (this.#isPaused) {
-      this.#pauseBlinkInterval = setInterval(() => this.#update(), 500);
-    } else if (this.#pauseBlinkInterval) {
-      clearInterval(this.#pauseBlinkInterval);
-    }
+    this.#updateButtonStates();
   }
 
-  #displayMessage(message, callback) {
-    this.message = message;
-    this.showMessage = true;
+  #scorePauseToggle(message, callback) {
+    if (!this.#scorePaused) {
+      this.#scorePaused = true;
+      console.log(message);
 
-    this.#context.font = `${Settings.playField.fontSize}px ${Settings.playField.font}`;
-    this.#context.fillStyle = Settings.playField.infoFontColor;
-    // const textWidth = this.#context.measureText(message).width;
-    this.#context.fillText(message, this.#xPosText, this.#yPosText);
-    this.#isPaused = true;
-    setTimeout(() => {
-      console.log("Timeout wird ausgeführt");
-      this.#context.clearRect(
-        0,
-        this.#yPosText - Settings.playField.fontSize,
-        this.#canvas.width,
-        Settings.playField.fontSize + 10
-      );
-      callback();
-      this.showMessage = false;
-      this.#isPaused = false;
-    }, this.#scorePauseDuration);
+      this.#drawScorePauseMessage(message);
+      cancelAnimationFrame(this.#requestId);
+      setTimeout(() => {
+        this.#context.clearRect(
+          0,
+          this.#yPosText - Settings.playField.fontSize,
+          this.#canvas.width,
+          Settings.playField.fontSize + 10
+        );
+        callback();
+        this.#scorePaused = false;
+        this.#update();
+      }, this.#scorePausedDuration);
+    }
   }
 
   #setupButtonListeners() {
@@ -280,32 +300,19 @@ export default class Game {
     const pauseButton = document.getElementById("pause-button");
     const endButton = document.getElementById("end-button");
 
-    if (startButton) {
-      startButton.addEventListener("click", () => {
-        if (!this.#gameStarted) {
-          this.start();
-        }
-      });
-    }
+    startButton.addEventListener("click", () => {
+      this.start();
+    });
 
-    if (pauseButton) {
-      pauseButton.addEventListener("click", () => {
-        if (this.#gameStarted && !this.#isGameOver) {
-          this.#togglePause();
-          this.#updateButtonStates();
-        }
-      });
-    }
+    pauseButton.addEventListener("click", () => {
+      this.#togglePause();
+    });
 
-    if (endButton) {
-      endButton.addEventListener("click", () => {
-        if (this.#gameStarted && !this.#isGameOver) {
-          this.#isGameOver = true;
-          this.#endGame();
-          this.#updateButtonStates();
-        }
-      });
-    }
+    endButton.addEventListener("click", () => {
+      this.#isGameOver = true;
+    });
+
+    this.#updateButtonStates();
   }
 
   #updateButtonStates() {
@@ -313,14 +320,18 @@ export default class Game {
     const pauseButton = document.getElementById("pause-button");
     const endButton = document.getElementById("end-button");
 
-    if (startButton) {
-      startButton.disabled = this.#gameStarted;
-    }
-    if (pauseButton) {
-      pauseButton.disabled = !this.#gameStarted || this.#isGameOver;
-    }
-    if (endButton) {
-      endButton.disabled = !this.#gameStarted || this.#isGameOver;
+    if (this.#gameStarted && !this.#isPaused) {
+      startButton.disabled = true;
+      pauseButton.disabled = false;
+      endButton.disabled = false;
+    } else if (this.#gameStarted && this.#isPaused) {
+      startButton.disabled = true;
+      pauseButton.disabled = false;
+      endButton.disabled = false;
+    } else {
+      startButton.disabled = false;
+      pauseButton.disabled = true;
+      endButton.disabled = true;
     }
   }
 }

@@ -33,7 +33,6 @@ export default class Ball extends GameElement {
   }
 
   reset() {
-    // console.log("Ball wird resetet!");
     const canvas = this.getCanvasContext().canvas;
     this.x = canvas.width / 2;
     this.y = canvas.height / 2;
