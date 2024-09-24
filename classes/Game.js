@@ -12,7 +12,7 @@ export default class Game {
   #ball;
   #requestId;
   #isGameOver = false;
-  #scorePausedDuration = 100; // default 2000
+  #scorePausedDuration = 500; // default 2000
   #isPaused = false;
   #scorePaused = false;
   #xPosText;
@@ -109,7 +109,6 @@ export default class Game {
     }
     this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
     if (!this.#isPaused) {
-      // && !this.#scorePaused
       this.#drawPlayfield();
       this.#gameLogic();
       this.#updateAndDraw();
@@ -166,7 +165,6 @@ export default class Game {
 
   #drawScorePauseMessage(message) {
     if (this.#scorePaused) {
-      // this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
       this.#context.font = `${Settings.playField.fontSize}px ${Settings.playField.font}`;
       this.#context.fillStyle = Settings.playField.infoFontColor;
       this.#context.fillText(message, this.#xPosText, this.#yPosText);
@@ -275,24 +273,12 @@ export default class Game {
   }
 
   #scorePauseToggle(message, callback) {
-    if (!this.#scorePaused) {
-      this.#scorePaused = true;
-      console.log(message);
-
-      this.#drawScorePauseMessage(message);
-      cancelAnimationFrame(this.#requestId);
-      setTimeout(() => {
-        this.#context.clearRect(
-          0,
-          this.#yPosText - Settings.playField.fontSize,
-          this.#canvas.width,
-          Settings.playField.fontSize + 10
-        );
-        callback();
-        this.#scorePaused = false;
-        this.#update();
-      }, this.#scorePausedDuration);
-    }
+    this.#scorePaused = true;
+    this.#drawScorePauseMessage(message);
+    setTimeout(() => {
+      this.#scorePaused = false;
+      callback();
+    }, this.#scorePausedDuration);
   }
 
   #setupButtonListeners() {
