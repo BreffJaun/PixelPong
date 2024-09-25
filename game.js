@@ -6,7 +6,7 @@ const game = new Game();
 const startButton = document.getElementById("start-button");
 if (startButton) {
   window.onload = () => {
-    game.initalizeGame();
+    game.initializeGame();
   };
   startButton.addEventListener("click", () => {
     if (!game.isGameStarted()) {

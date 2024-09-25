@@ -63,10 +63,12 @@ export default class Game {
       this.#canvas.height / 2 +
       (Settings.playField.fontSize * Settings.playField.fontSizeFactor) / 2;
     this.#setupButtonListeners();
+    this.scoreCounter = 0;
   }
 
-  initalizeGame() {
+  initializeGame() {
     this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+    this.#initControls();
     this.#drawPlayfield();
     this.#drawScore();
     this.#updateAndDraw();
@@ -101,13 +103,16 @@ export default class Game {
     this.#displayFinishText();
     this.#updateButtonStates();
     cancelAnimationFrame(this.#requestId);
+    console.log("this.#requestId ENDGAME", this.#requestId);
   }
 
   #update() {
-    if (this.#isGameOver) {
-      this.#endGame();
-    }
+    console.log("UPDATE CALLED");
+    // if (this.#isGameOver) {
+    //   this.#endGame();
+    // }
     this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+
     if (!this.#isPaused) {
       this.#drawPlayfield();
       this.#gameLogic();
@@ -159,7 +164,7 @@ export default class Game {
       this.#context.font = `${60}px ${Settings.playField.font}`;
       this.#context.textAlign = "center";
       this.#context.fillStyle = "rgba(255, 0, 0, 0.5)";
-      this.#context.fillText("PAUSE", this.#xPosText, this.#yPosText);
+      this.#context.fillText("PAUSE", this.#xPosText, 234); // EIgentlich this.#yPosText
     }
   }
 
@@ -172,10 +177,23 @@ export default class Game {
   }
 
   #gameLogic() {
+    if (
+      this.#player1.points >= Settings.maxPoints ||
+      this.#player2.points >= Settings.maxPoints
+    ) {
+      // this.#isGameOver = true;
+      console.log("this.#requestId GAMELOGIC", this.#requestId);
+      this.#endGame();
+      return;
+    }
+    // console.log("ICH WERDE NOCH AUSGEFÜHRT ! ! !");
     if (!this.#scorePaused) {
       if (this.#ball._collidesWithLeftWall()) {
         if (this.#player2.points < Settings.maxPoints) {
           this.#player2.points++;
+          this.scoreCounter++;
+          console.log("Score Counter: ", this.scoreCounter);
+          console.log("Scored from Player 2");
           this.#scorePauseToggle("Player 2 scores!", () => {
             this.#ball.reset();
             this.#player1.resetPosition();
@@ -185,6 +203,9 @@ export default class Game {
       } else if (this.#ball._collidesWithRightWall()) {
         if (this.#player1.points < Settings.maxPoints) {
           this.#player1.points++;
+          this.scoreCounter++;
+          console.log("Score Counter: ", this.scoreCounter);
+          console.log("Scored from Player 1");
           this.#scorePauseToggle("Player 1 scores!", () => {
             this.#ball.reset();
             this.#player1.resetPosition();
@@ -192,13 +213,6 @@ export default class Game {
           });
         }
       }
-    }
-
-    if (
-      this.#player1.points >= Settings.maxPoints ||
-      this.#player2.points >= Settings.maxPoints
-    ) {
-      this.#isGameOver = true;
     }
   }
 
@@ -275,6 +289,7 @@ export default class Game {
   #scorePauseToggle(message, callback) {
     this.#scorePaused = true;
     this.#drawScorePauseMessage(message);
+    // cancelAnimationFrame(this.#requestId);
     setTimeout(() => {
       this.#scorePaused = false;
       callback();
