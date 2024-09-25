@@ -20,6 +20,7 @@ export default class Ball extends GameElement {
     const context = this.getCanvasContext();
     context.beginPath();
     context.fillStyle = this.getColor();
+    console.log(this.x, this.y, this.radius);
     context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
     context.closePath();
     context.fill();
@@ -34,8 +35,8 @@ export default class Ball extends GameElement {
 
   reset() {
     const canvas = this.getCanvasContext().canvas;
-    this.x = canvas.width / 2;
-    this.y = canvas.height / 2;
+    this.x = canvas.width / 2 - this.radius;
+    this.y = canvas.height / 2 - this.radius;
 
     this.direction.x = Math.random() < 0.5 ? 1 : -1;
     this.direction.y = Math.random() < 0.5 ? 1 : -1;
