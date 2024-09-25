@@ -15,6 +15,7 @@ export default class Game {
   #scorePausedDuration = 500; // default 2000
   #isPaused = false;
   #scorePaused = false;
+  #scoreMessage = "";
   #xPosText;
   #yPosText;
   #gameStarted = false;
@@ -65,7 +66,6 @@ export default class Game {
     this.#setupButtonListeners();
     this.#requestId = null;
     this.scoreCounter = 0;
-    this.timeOutCounter = 0;
   }
 
   initializeGame() {
@@ -122,6 +122,9 @@ export default class Game {
       this.#gameLogic();
       this.#updateAndDraw();
       this.#drawScore();
+      if (this.#scorePaused && this.#checkIfPlayerStillNotWon()) {
+        this.#drawScorePauseMessage(this.#scoreMessage);
+      }
       this.#updateButtonStates();
       this.#requestId = requestAnimationFrame(this.#update.bind(this));
     } else {
@@ -185,9 +188,7 @@ export default class Game {
       this.#player1.points >= Settings.maxPoints ||
       this.#player2.points >= Settings.maxPoints
     ) {
-      // this.#isGameOver = true;
       this.#requestId = null;
-      // console.log("this.#requestId GAMELOGIC", this.#requestId);
       this.#endGame();
       return;
     }
@@ -196,10 +197,8 @@ export default class Game {
       if (this.#ball._collidesWithLeftWall()) {
         if (this.#player2.points < Settings.maxPoints) {
           this.#player2.points++;
-          this.scoreCounter++;
-          // console.log("Score Counter: ", this.scoreCounter);
-          // console.log("Scored from Player 2");
-          this.#scorePauseToggle("Player 2 scores!", () => {
+          this.#scoreMessage = "Player 2 scores!";
+          this.#scorePauseToggle(this.#scoreMessage, () => {
             this.#ball.reset();
             this.#player1.resetPosition();
             this.#player2.resetPosition();
@@ -208,10 +207,8 @@ export default class Game {
       } else if (this.#ball._collidesWithRightWall()) {
         if (this.#player1.points < Settings.maxPoints) {
           this.#player1.points++;
-          this.scoreCounter++;
-          // console.log("Score Counter: ", this.scoreCounter);
-          // console.log("Scored from Player 1");
-          this.#scorePauseToggle("Player 1 scores!", () => {
+          this.#scoreMessage = "Player 1 scores!";
+          this.#scorePauseToggle(this.#scoreMessage, () => {
             this.#ball.reset();
             this.#player1.resetPosition();
             this.#player2.resetPosition();
@@ -293,11 +290,17 @@ export default class Game {
 
   #scorePauseToggle(message, callback) {
     this.#scorePaused = true;
-    this.#drawScorePauseMessage(message);
+    if (this.#checkIfPlayerStillNotWon()) {
+      this.#drawScorePauseMessage(message);
+    }
     setTimeout(() => {
       this.timeOutCounter++;
       this.#scorePaused = false;
       // console.log("Timeout Counter: ", this.timeOutCounter);
+      // this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
+      // this.#drawPlayfield();
+      // this.#drawScore();
+      // this.#updateAndDraw();
       callback();
       if (
         this.#player1.points === Settings.maxPoints ||
@@ -345,6 +348,17 @@ export default class Game {
       startButton.disabled = false;
       pauseButton.disabled = true;
       endButton.disabled = true;
+    }
+  }
+
+  #checkIfPlayerStillNotWon() {
+    if (
+      this.#player1.points < Settings.maxPoints &&
+      this.#player2.points < Settings.maxPoints
+    ) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

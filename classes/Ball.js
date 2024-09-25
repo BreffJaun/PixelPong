@@ -20,7 +20,6 @@ export default class Ball extends GameElement {
     const context = this.getCanvasContext();
     context.beginPath();
     context.fillStyle = this.getColor();
-    console.log(this.x, this.y, this.radius);
     context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
     context.closePath();
     context.fill();
