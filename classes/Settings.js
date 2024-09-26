@@ -20,5 +20,10 @@ export default class Settings {
     fontSize: 20,
     fontSizeFactor: 1.3,
   };
+  static ball = {
+    radius: 10,
+    color: "white",
+    velocity: 3,
+  };
   static gameSettings = {};
 }

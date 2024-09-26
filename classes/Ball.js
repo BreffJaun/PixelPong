@@ -11,7 +11,7 @@ export default class Ball extends GameElement {
     this.radius = radius;
     this.#player1 = player1;
     this.#player2 = player2;
-    this.velocity = 6; // default 3
+    this.velocity = 3; // default 3
     this.direction = { x: 1, y: -1 };
   }
 
@@ -34,8 +34,8 @@ export default class Ball extends GameElement {
 
   reset() {
     const canvas = this.getCanvasContext().canvas;
-    this.x = canvas.width / 2 - this.radius;
-    this.y = canvas.height / 2 - this.radius;
+    this.x = canvas.width / 2 - this.radius / 2;
+    this.y = canvas.height / 2 - this.radius / 2;
 
     this.direction.x = Math.random() < 0.5 ? 1 : -1;
     this.direction.y = Math.random() < 0.5 ? 1 : -1;
