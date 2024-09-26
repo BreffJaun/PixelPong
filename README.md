@@ -34,5 +34,6 @@
 
 ## Where to play?
 Here you can find the link to the deployment of the game. Enjoy playing 😎   
-⭐ [Link to play the Game](https://breffjaun.github.io/PixelPong/) ⭐
+⭐ <a href="https://breffjaun.github.io/PixelPong/" target="_blank">Link to play the Game</a> ⭐
+
 
