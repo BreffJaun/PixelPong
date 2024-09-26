@@ -33,6 +33,6 @@
 - **Pause Functionality:** The game can be paused and resumed at any time.
 
 ## Where to play?
-Here you can find the link to the deployment of the game. Enjoy playing 😎
-[Game](https://breffjaun.github.io/PixelPong/)
+Here you can find the link to the deployment of the game. Enjoy playing 😎   
+⭐ [Link to play the Game](https://breffjaun.github.io/PixelPong/) ⭐
 
