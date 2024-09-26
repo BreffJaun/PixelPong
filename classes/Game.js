@@ -106,7 +106,6 @@ export default class Game {
   #endGame() {
     this.#isGameOver = false;
     this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
-    // this.#resetPlayerAndBallPositions();
     this.#drawPlayfield();
     this.#updateAndDraw();
     this.#drawScore();
@@ -114,17 +113,14 @@ export default class Game {
     this.#resetButtons();
     cancelAnimationFrame(this.#requestId);
     this.#requestId = null;
-    // console.log("END GAME WIRD AUSGEFÜHRT");
   }
 
   #forceEndGame() {
     this.#isGameOver = false;
     this.#context.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
     this.#drawPlayfield();
-    console.log("BEFORE RESET: ", this.#ball.x, this.#ball.y);
     this.#resetPlayerAndBallPositions();
     this.#updateAndDraw();
-    console.log("AFTER RESET: ", this.#ball.x, this.#ball.y);
     this.#resetScores();
     this.#drawScore();
     this.#resetButtons();
@@ -132,7 +128,6 @@ export default class Game {
     this.#requestId = null;
     const startButton = document.getElementById("start-button");
     startButton.innerText = "Start";
-    // this.initializeGame();
   }
 
   #update() {
@@ -372,7 +367,6 @@ export default class Game {
     ) {
       startButton.innerText = "Restart";
     }
-    // console.log("UPDATE BUTTON STATES");
   }
 
   #resetButtons() {
@@ -383,7 +377,6 @@ export default class Game {
     startButton.disabled = false;
     pauseButton.disabled = true;
     endButton.disabled = true;
-    // console.log("RESETED BUTTONS");
   }
 
   #resetPlayerAndBallPositions() {
